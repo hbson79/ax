@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Starter Kit
 
-## Getting Started
+A modern web starter kit built with Next.js, Tailwind CSS, and Shadcn UI. Clone the template branch that fits your project and start building immediately.
 
-First, run the development server:
+## Templates
+
+| Template       | Branch               | Description                                               |
+| -------------- | -------------------- | --------------------------------------------------------- |
+| **Base**       | `main`               | Generic starter kit - build anything                      |
+| **SaaS**       | `template/saas`      | SaaS landing page with pricing and testimonials           |
+| **Portfolio**  | `template/portfolio` | Personal portfolio with projects, skills and contact form |
+| **Blog**       | `template/blog`      | Blog with posts, categories and newsletter signup         |
+| **E-commerce** | `template/ecommerce` | Online store with products, categories and promo sections |
+
+### Quick Start
 
 ```bash
+# Clone a specific template
+git clone -b template/saas <repo-url> my-project
+cd my-project
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Or clone the base starter kit:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+git clone <repo-url> my-project
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Tech Stack
 
-## Learn More
+| Technology                     | Role                         |
+| ------------------------------ | ---------------------------- |
+| Next.js 16 (App Router)        | Framework                    |
+| TypeScript                     | Type safety                  |
+| Tailwind CSS 4                 | Styling                      |
+| Shadcn UI                      | Component library            |
+| Lucide React                   | Icons                        |
+| next-themes                    | Dark mode                    |
+| Framer Motion                  | Animations                   |
+| React Hook Form + Zod          | Form handling and validation |
+| Zustand                        | State management             |
+| Sonner                         | Toast notifications          |
+| Prettier + Husky + lint-staged | Code quality                 |
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── layout.tsx          # Root layout (ThemeProvider, fonts)
+│   ├── page.tsx            # Landing page
+│   └── globals.css         # Global styles + Tailwind
+├── components/
+│   ├── ui/                 # Shadcn UI components
+│   ├── layout/             # Header, Footer, MobileNav, ThemeToggle
+│   ├── sections/           # Landing page sections (template-specific)
+│   └── shared/             # AnimatedWrapper, SectionHeader, Logo
+├── lib/                    # utils.ts, constants.ts
+├── hooks/                  # Custom React hooks
+├── stores/                 # Zustand stores
+├── types/                  # TypeScript type definitions
+└── providers/              # Context providers (ThemeProvider)
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Available Scripts
 
-## Deploy on Vercel
+```bash
+npm run dev          # Start development server
+npm run build        # Production build
+npm run start        # Start production server
+npm run lint         # Run ESLint
+npm run format       # Format with Prettier
+npm run format:check # Check formatting
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Customization
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **Site config**: Edit `src/lib/constants.ts` (name, description, nav links, footer links)
+- **Theme colors**: Edit CSS variables in `src/app/globals.css`
+- **Sections**: Add/remove/modify components in `src/components/sections/`
+- **Components**: Add Shadcn UI components with `npx shadcn@latest add <component>`
+
+## License
+
+MIT
