@@ -14,13 +14,13 @@ export function Hero() {
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
           <AnimatedWrapper>
             <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-sm">
-              Modern Web Starter Kit
+              Trusted by 10,000+ teams worldwide
             </Badge>
           </AnimatedWrapper>
 
           <AnimatedWrapper delay={0.1}>
             <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Build Beautiful Websites{" "}
+              Grow Your Business{" "}
               <span className="from-primary to-primary/60 bg-gradient-to-r bg-clip-text text-transparent">
                 Faster Than Ever
               </span>
@@ -29,21 +29,21 @@ export function Hero() {
 
           <AnimatedWrapper delay={0.2}>
             <p className="text-muted-foreground mt-6 max-w-xl text-lg md:text-xl">
-              A production-ready starter kit with Next.js, Tailwind CSS, and
-              Shadcn UI. Stop reinventing the wheel and focus on what matters.
+              The all-in-one platform to streamline your workflow, boost
+              productivity, and scale your business effortlessly.
             </p>
           </AnimatedWrapper>
 
           <AnimatedWrapper delay={0.3}>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
               <Button size="lg" asChild>
-                <Link href="#cta">
-                  Get Started
+                <Link href="#pricing">
+                  Start Free Trial
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
               <Button size="lg" variant="outline" asChild>
-                <Link href="#features">Learn More</Link>
+                <Link href="#features">See How It Works</Link>
               </Button>
             </div>
           </AnimatedWrapper>

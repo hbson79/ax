@@ -1,15 +1,16 @@
 export const siteConfig = {
-  name: "Starter Kit",
+  name: "SaaS App",
   description:
-    "A modern web starter kit built with Next.js, Tailwind CSS, and Shadcn UI.",
+    "Grow your business with our powerful SaaS platform. Built with Next.js, Tailwind CSS, and Shadcn UI.",
   url: "https://example.com",
   ogImage: "https://example.com/og.jpg",
 } as const
 
 export const navLinks = [
   { label: "Features", href: "#features" },
+  { label: "Pricing", href: "#pricing" },
+  { label: "Testimonials", href: "#testimonials" },
   { label: "FAQ", href: "#faq" },
-  { label: "Contact", href: "#cta" },
 ] as const
 
 export const footerLinks = {

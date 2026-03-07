@@ -11,29 +11,34 @@ import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
 const faqs = [
   {
-    question: "What is included in this starter kit?",
+    question: "How does the free trial work?",
     answer:
-      "This starter kit includes Next.js with App Router, TypeScript, Tailwind CSS, Shadcn UI, dark mode support, Framer Motion animations, form handling with React Hook Form + Zod, state management with Zustand, and code quality tools like ESLint, Prettier, and Husky.",
+      "You get full access to all Pro features for 14 days. No credit card required. At the end of the trial, you can choose to subscribe or continue with the free plan.",
   },
   {
-    question: "Can I use this for commercial projects?",
+    question: "Can I change my plan later?",
     answer:
-      "Yes! This starter kit is open source and can be used for any type of project, including commercial ones. Feel free to modify it to fit your needs.",
+      "Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately, and we'll prorate your billing accordingly.",
   },
   {
-    question: "How do I add authentication?",
+    question: "Is my data secure?",
     answer:
-      "We recommend using Supabase for authentication. Install @supabase/supabase-js and @supabase/ssr, then follow the Supabase Next.js guide to set up auth with social login, email/password, and more.",
+      "Absolutely. We use end-to-end encryption, are SOC 2 compliant, and regularly undergo third-party security audits. Your data is stored in secure, redundant data centers.",
   },
   {
-    question: "Is this optimized for SEO?",
+    question: "Do you offer custom enterprise plans?",
     answer:
-      "Yes. Next.js App Router provides built-in SEO support with the Metadata API. The starter kit includes basic metadata configuration that you can customize for your project.",
+      "Yes! Our Enterprise plan is fully customizable. Contact our sales team to discuss your specific needs, including custom SLAs, dedicated support, and on-premise deployment options.",
   },
   {
-    question: "How do I deploy this?",
+    question: "What integrations do you support?",
     answer:
-      "The easiest way is to deploy on Vercel, which is optimized for Next.js. Simply connect your Git repository and Vercel will handle the rest automatically.",
+      "We integrate with 100+ tools including Slack, GitHub, Jira, Notion, Google Workspace, and more. We also offer a REST API and webhooks for custom integrations.",
+  },
+  {
+    question: "How do I get support?",
+    answer:
+      "Free plan users get community support. Pro users get priority email support with 24-hour response times. Enterprise users get a dedicated account manager and phone support.",
   },
 ]
 

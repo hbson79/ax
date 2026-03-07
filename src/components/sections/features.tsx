@@ -1,6 +1,6 @@
 "use client"
 
-import { Palette, Zap, Shield, Smartphone, Code2, Layers } from "lucide-react"
+import { BarChart3, Zap, Shield, Users, Globe, Puzzle } from "lucide-react"
 import {
   Card,
   CardHeader,
@@ -12,40 +12,40 @@ import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
 const features = [
   {
-    title: "Modern Stack",
+    title: "Powerful Analytics",
     description:
-      "Built with Next.js App Router, TypeScript, and Tailwind CSS for the best developer experience.",
-    icon: Code2,
+      "Track key metrics and gain actionable insights with real-time dashboards and custom reports.",
+    icon: BarChart3,
   },
   {
-    title: "Beautiful UI",
+    title: "Lightning Fast",
     description:
-      "Pre-configured Shadcn UI components that are accessible, customizable, and production-ready.",
-    icon: Palette,
-  },
-  {
-    title: "Dark Mode",
-    description:
-      "Seamless light/dark theme switching with next-themes. No flash of unstyled content.",
+      "Optimized for speed with edge computing and smart caching. Your users will notice the difference.",
     icon: Zap,
   },
   {
-    title: "Fully Responsive",
+    title: "Enterprise Security",
     description:
-      "Mobile-first design that looks great on every screen size, from phones to ultrawide monitors.",
-    icon: Smartphone,
-  },
-  {
-    title: "Type Safe",
-    description:
-      "End-to-end type safety with TypeScript and Zod schema validation for reliable applications.",
+      "SOC 2 compliant with end-to-end encryption, SSO, and role-based access control built in.",
     icon: Shield,
   },
   {
-    title: "Scalable Architecture",
+    title: "Team Collaboration",
     description:
-      "Clean project structure with organized components, hooks, stores, and utilities.",
-    icon: Layers,
+      "Real-time collaboration tools, shared workspaces, and granular permissions for your entire team.",
+    icon: Users,
+  },
+  {
+    title: "Global Scale",
+    description:
+      "Deploy to 30+ regions worldwide. Auto-scaling infrastructure handles any traffic spike.",
+    icon: Globe,
+  },
+  {
+    title: "Seamless Integrations",
+    description:
+      "Connect with 100+ tools you already use. Slack, GitHub, Jira, and more with one-click setup.",
+    icon: Puzzle,
   },
 ]
 
@@ -55,8 +55,8 @@ export function Features() {
       <div className="container mx-auto px-4 md:px-6">
         <AnimatedWrapper>
           <SectionHeader
-            title="Everything You Need"
-            description="A comprehensive starter kit with all the essentials to build modern web applications quickly and efficiently."
+            title="Everything You Need to Scale"
+            description="A complete platform with powerful features designed to help your team work smarter and grow faster."
           />
         </AnimatedWrapper>
 

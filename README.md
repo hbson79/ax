@@ -1,86 +1,36 @@
-# Starter Kit
+# SaaS Landing Page Template
 
-A modern web starter kit built with Next.js, Tailwind CSS, and Shadcn UI. Clone the template branch that fits your project and start building immediately.
+A modern SaaS landing page built with Next.js, Tailwind CSS, and Shadcn UI. Part of the [Starter Kit](https://github.com/guijanam/starter_kit) template system.
 
-## Templates
+## Sections
 
-| Template       | Branch               | Description                                               |
-| -------------- | -------------------- | --------------------------------------------------------- |
-| **Base**       | `main`               | Generic starter kit - build anything                      |
-| **SaaS**       | `template/saas`      | SaaS landing page with pricing and testimonials           |
-| **Portfolio**  | `template/portfolio` | Personal portfolio with projects, skills and contact form |
-| **Blog**       | `template/blog`      | Blog with posts, categories and newsletter signup         |
-| **E-commerce** | `template/ecommerce` | Online store with products, categories and promo sections |
+- **Hero** - Headline, subtitle, CTA buttons
+- **Features** - 6-card grid with icons (Analytics, Speed, Security, Collaboration, Scale, Integrations)
+- **Pricing** - 3-tier pricing cards (Free / Pro / Enterprise)
+- **Testimonials** - Customer testimonial cards
+- **FAQ** - Accordion-based Q&A
+- **CTA** - Final call-to-action with free trial
 
-### Quick Start
+## Quick Start
 
 ```bash
-# Clone a specific template
-git clone -b template/saas <repo-url> my-project
-cd my-project
+git clone -b template/saas https://github.com/guijanam/starter_kit.git my-saas
+cd my-saas
 npm install
 npm run dev
 ```
 
-Or clone the base starter kit:
+## Customization
 
-```bash
-git clone <repo-url> my-project
-```
+- **Branding**: Edit `src/lib/constants.ts` (site name, nav links, footer links)
+- **Pricing plans**: Edit the `plans` array in `src/components/sections/pricing.tsx`
+- **Testimonials**: Edit the `testimonials` array in `src/components/sections/testimonials.tsx`
+- **Features**: Edit the `features` array in `src/components/sections/features.tsx`
+- **Theme colors**: Edit CSS variables in `src/app/globals.css`
 
 ## Tech Stack
 
-| Technology                     | Role                         |
-| ------------------------------ | ---------------------------- |
-| Next.js 16 (App Router)        | Framework                    |
-| TypeScript                     | Type safety                  |
-| Tailwind CSS 4                 | Styling                      |
-| Shadcn UI                      | Component library            |
-| Lucide React                   | Icons                        |
-| next-themes                    | Dark mode                    |
-| Framer Motion                  | Animations                   |
-| React Hook Form + Zod          | Form handling and validation |
-| Zustand                        | State management             |
-| Sonner                         | Toast notifications          |
-| Prettier + Husky + lint-staged | Code quality                 |
-
-## Project Structure
-
-```
-src/
-├── app/                    # Next.js App Router
-│   ├── layout.tsx          # Root layout (ThemeProvider, fonts)
-│   ├── page.tsx            # Landing page
-│   └── globals.css         # Global styles + Tailwind
-├── components/
-│   ├── ui/                 # Shadcn UI components
-│   ├── layout/             # Header, Footer, MobileNav, ThemeToggle
-│   ├── sections/           # Landing page sections (template-specific)
-│   └── shared/             # AnimatedWrapper, SectionHeader, Logo
-├── lib/                    # utils.ts, constants.ts
-├── hooks/                  # Custom React hooks
-├── stores/                 # Zustand stores
-├── types/                  # TypeScript type definitions
-└── providers/              # Context providers (ThemeProvider)
-```
-
-## Available Scripts
-
-```bash
-npm run dev          # Start development server
-npm run build        # Production build
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run format       # Format with Prettier
-npm run format:check # Check formatting
-```
-
-## Customization
-
-- **Site config**: Edit `src/lib/constants.ts` (name, description, nav links, footer links)
-- **Theme colors**: Edit CSS variables in `src/app/globals.css`
-- **Sections**: Add/remove/modify components in `src/components/sections/`
-- **Components**: Add Shadcn UI components with `npx shadcn@latest add <component>`
+Next.js 16 | TypeScript | Tailwind CSS 4 | Shadcn UI | Framer Motion | next-themes | React Hook Form + Zod | Zustand
 
 ## License
 

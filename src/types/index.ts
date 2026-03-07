@@ -13,3 +13,19 @@ export interface FaqItem {
   question: string
   answer: string
 }
+
+export interface PricingPlan {
+  name: string
+  price: string
+  description: string
+  features: string[]
+  highlighted?: boolean
+  cta: string
+}
+
+export interface Testimonial {
+  name: string
+  role: string
+  company: string
+  content: string
+}
