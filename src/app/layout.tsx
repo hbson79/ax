@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "메뉴스캔 - AI 구내식당 메뉴 분석",
+  title: "식당메뉴스캔 - AI 구내식당 메뉴 분석",
   description:
     "구내식당 메뉴 사진을 찍으면 AI가 자동으로 분석하여 주간 식단표를 데이터로 변환해드립니다.",
 }
