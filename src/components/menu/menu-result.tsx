@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
-import html2canvas from "html2canvas"
+import { toPng } from "html-to-image"
 import type { CafeteriaMenuResult } from "@/types"
 
 interface MenuResultProps {
@@ -34,23 +34,19 @@ export function MenuResult({ data }: MenuResultProps) {
     if (!tableRef.current) return
 
     try {
-      const canvas = await html2canvas(tableRef.current, {
-        backgroundColor: null,
-        scale: 2,
+      const dataUrl = await toPng(tableRef.current, {
+        pixelRatio: 2,
+        backgroundColor: "#ffffff",
       })
 
-      canvas.toBlob((blob) => {
-        if (!blob) return
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = `${data.cafeteria_name}_${data.start_date}.png`
-        a.click()
-        URL.revokeObjectURL(url)
-      }, "image/png")
+      const a = document.createElement("a")
+      a.href = dataUrl
+      a.download = `${data.cafeteria_name}_${data.start_date}.png`
+      a.click()
 
       toast.success("이미지가 다운로드되었습니다.")
-    } catch {
+    } catch (error) {
+      console.error("Download error:", error)
       toast.error("다운로드에 실패했습니다.")
     }
   }
@@ -76,7 +72,10 @@ export function MenuResult({ data }: MenuResultProps) {
       </div>
 
       {/* 테이블 (캡처 대상) */}
-      <div ref={tableRef} className="grid gap-3">
+      <div
+        ref={tableRef}
+        className="grid gap-3 rounded-xl bg-white p-4 dark:bg-neutral-900"
+      >
         {data.weekly_menus.map((day) => (
           <Card key={day.date}>
             <CardHeader className="pb-3">
