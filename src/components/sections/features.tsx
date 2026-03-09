@@ -1,6 +1,13 @@
 "use client"
 
-import { BarChart3, Zap, Shield, Users, Globe, Puzzle } from "lucide-react"
+import {
+  Camera,
+  Zap,
+  FileJson,
+  Calendar,
+  Shield,
+  Smartphone,
+} from "lucide-react"
 import {
   Card,
   CardHeader,
@@ -12,40 +19,39 @@ import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
 const features = [
   {
-    title: "Powerful Analytics",
+    title: "사진만 찍으면 끝",
     description:
-      "Track key metrics and gain actionable insights with real-time dashboards and custom reports.",
-    icon: BarChart3,
+      "구내식당 메뉴판을 사진으로 찍기만 하면 AI가 알아서 텍스트를 인식하고 분류합니다.",
+    icon: Camera,
   },
   {
-    title: "Lightning Fast",
-    description:
-      "Optimized for speed with edge computing and smart caching. Your users will notice the difference.",
+    title: "빠른 분석",
+    description: "최신 AI 비전 기술로 몇 초 만에 전체 주간 식단을 분석합니다.",
     icon: Zap,
   },
   {
-    title: "Enterprise Security",
+    title: "구조화된 JSON 데이터",
     description:
-      "SOC 2 compliant with end-to-end encryption, SSO, and role-based access control built in.",
+      "분석 결과를 깔끔한 JSON 형식으로 제공하여 다른 시스템과 쉽게 연동할 수 있습니다.",
+    icon: FileJson,
+  },
+  {
+    title: "주간 식단표 지원",
+    description:
+      "월~금 주간 메뉴표를 날짜별, 끼니별(조식/중식/석식)로 자동 분류합니다.",
+    icon: Calendar,
+  },
+  {
+    title: "정확한 인식",
+    description:
+      "손글씨, 인쇄물, 디지털 화면 등 다양한 형태의 메뉴판을 높은 정확도로 인식합니다.",
     icon: Shield,
   },
   {
-    title: "Team Collaboration",
+    title: "어디서든 사용",
     description:
-      "Real-time collaboration tools, shared workspaces, and granular permissions for your entire team.",
-    icon: Users,
-  },
-  {
-    title: "Global Scale",
-    description:
-      "Deploy to 30+ regions worldwide. Auto-scaling infrastructure handles any traffic spike.",
-    icon: Globe,
-  },
-  {
-    title: "Seamless Integrations",
-    description:
-      "Connect with 100+ tools you already use. Slack, GitHub, Jira, and more with one-click setup.",
-    icon: Puzzle,
+      "PC, 태블릿, 스마트폰 등 어떤 기기에서든 웹브라우저로 바로 사용할 수 있습니다.",
+    icon: Smartphone,
   },
 ]
 
@@ -55,8 +61,8 @@ export function Features() {
       <div className="container mx-auto px-4 md:px-6">
         <AnimatedWrapper>
           <SectionHeader
-            title="Everything You Need to Scale"
-            description="A complete platform with powerful features designed to help your team work smarter and grow faster."
+            title="주요 기능"
+            description="AI 기반 메뉴 분석으로 구내식당 식단 관리를 스마트하게"
           />
         </AnimatedWrapper>
 

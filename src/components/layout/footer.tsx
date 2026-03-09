@@ -2,7 +2,6 @@ import Link from "next/link"
 import { Logo } from "@/components/shared/logo"
 import { Separator } from "@/components/ui/separator"
 import { siteConfig, footerLinks } from "@/lib/constants"
-import { Github, Twitter } from "lucide-react"
 
 export function Footer() {
   return (
@@ -14,26 +13,10 @@ export function Footer() {
             <p className="text-muted-foreground mt-4 text-sm">
               {siteConfig.description}
             </p>
-            <div className="mt-4 flex gap-3">
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Github className="h-5 w-5" />
-                <span className="sr-only">GitHub</span>
-              </Link>
-              <Link
-                href="#"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-                <span className="sr-only">Twitter</span>
-              </Link>
-            </div>
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Product</h3>
+            <h3 className="mb-3 text-sm font-semibold">서비스</h3>
             <ul className="space-y-2">
               {footerLinks.product.map((link) => (
                 <li key={link.label}>
@@ -49,7 +32,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Company</h3>
+            <h3 className="mb-3 text-sm font-semibold">회사</h3>
             <ul className="space-y-2">
               {footerLinks.company.map((link) => (
                 <li key={link.label}>
@@ -65,7 +48,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold">Legal</h3>
+            <h3 className="mb-3 text-sm font-semibold">법적 고지</h3>
             <ul className="space-y-2">
               {footerLinks.legal.map((link) => (
                 <li key={link.label}>

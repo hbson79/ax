@@ -14,18 +14,21 @@ export interface FaqItem {
   answer: string
 }
 
-export interface PricingPlan {
-  name: string
-  price: string
-  description: string
-  features: string[]
-  highlighted?: boolean
-  cta: string
+export interface Meal {
+  breakfast?: string[]
+  lunch?: string[]
+  dinner?: string[]
 }
 
-export interface Testimonial {
-  name: string
-  role: string
-  company: string
-  content: string
+export interface DailyMenu {
+  date: string
+  day_of_week: string
+  meals: Meal
+}
+
+export interface CafeteriaMenuResult {
+  cafeteria_name: string
+  start_date: string
+  end_date: string
+  weekly_menus: DailyMenu[]
 }

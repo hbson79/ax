@@ -37,7 +37,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild className="hidden md:inline-flex">
-            <Link href="#cta">Get Started</Link>
+            <Link href="/analyze">메뉴 분석하기</Link>
           </Button>
           <MobileNav />
         </div>
