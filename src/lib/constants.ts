@@ -1,5 +1,5 @@
 export const siteConfig = {
-  name: "메뉴스캔",
+  name: "식당메뉴스캔",
   description:
     "구내식당 메뉴 사진을 찍으면 AI가 자동으로 분석하여 주간 식단표를 데이터로 변환해드립니다.",
   url: "https://menuscan.kr",
