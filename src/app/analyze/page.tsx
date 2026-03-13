@@ -77,7 +77,9 @@ export default function AnalyzePage() {
               메뉴 사진 분석
             </h1>
             <p className="text-muted-foreground mt-2">
-              구내식당 메뉴표 사진을 업로드하면 AI가 자동으로 분석합니다
+              메뉴표 사진을 업로드하면 AI가 자동으로 분석합니다.
+              <br />
+              지점이름이 나오게 그리고 선명한 사진이 분석에 유리.
             </p>
           </div>
 
