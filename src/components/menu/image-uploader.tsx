@@ -99,7 +99,8 @@ export function ImageUploader({ onFileSelect, isLoading }: ImageUploaderProps) {
             <>
               <Upload className="text-muted-foreground mb-4 h-12 w-12" />
               <p className="text-foreground mb-1 text-lg font-medium">
-                꼭 지점명이 보이도록 메뉴사진을 업로드하세요
+                지점명이 보이도록 메뉴사진을 업로드하세요.분석후 지점명
+                수정가능합니다.
               </p>
               <p className="text-muted-foreground text-sm">
                 드래그 앤 드롭 또는 클릭하여 선택
