@@ -1,8 +1,9 @@
 "use client"
 
-import { useRef } from "react"
-import { Calendar, Utensils, Download } from "lucide-react"
+import { useRef, useState } from "react"
+import { Calendar, Utensils, Download, Pencil, Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { toast } from "sonner"
@@ -11,6 +12,7 @@ import type { CafeteriaMenuResult } from "@/types"
 
 interface MenuResultProps {
   data: CafeteriaMenuResult
+  onNameChange?: (newName: string) => void
 }
 
 const mealLabels: Record<string, string> = {
@@ -27,8 +29,60 @@ const mealColors: Record<string, string> = {
     "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200",
 }
 
-export function MenuResult({ data }: MenuResultProps) {
+export function MenuResult({ data, onNameChange }: MenuResultProps) {
   const tableRef = useRef<HTMLDivElement>(null)
+  const [isEditing, setIsEditing] = useState(false)
+  const [editName, setEditName] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
+
+  const handleEditStart = () => {
+    setEditName(data.cafeteria_name)
+    setIsEditing(true)
+  }
+
+  const handleEditCancel = () => {
+    setIsEditing(false)
+  }
+
+  const handleEditSave = async () => {
+    const trimmed = editName.trim()
+    if (!trimmed) {
+      toast.error("식당 이름을 입력해주세요.")
+      return
+    }
+    if (trimmed === data.cafeteria_name) {
+      setIsEditing(false)
+      return
+    }
+
+    setIsSaving(true)
+    try {
+      const response = await fetch("/api/analyze/name", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          old_name: data.cafeteria_name,
+          new_name: trimmed,
+          start_date: data.start_date,
+        }),
+      })
+
+      if (!response.ok) {
+        const err = await response.json()
+        throw new Error(err.error || "수정 실패")
+      }
+
+      onNameChange?.(trimmed)
+      setIsEditing(false)
+      toast.success("식당 이름이 수정되었습니다.")
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "이름 수정에 실패했습니다."
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
 
   const handleDownload = async () => {
     if (!tableRef.current) return
@@ -56,10 +110,53 @@ export function MenuResult({ data }: MenuResultProps) {
       {/* 헤더 */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-foreground flex items-center gap-2 text-xl font-bold">
-            <Utensils className="h-5 w-5" />
-            {data.cafeteria_name}
-          </h2>
+          {isEditing ? (
+            <div className="flex items-center gap-2">
+              <Utensils className="h-5 w-5 shrink-0" />
+              <Input
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleEditSave()
+                  if (e.key === "Escape") handleEditCancel()
+                }}
+                className="h-8 w-48 text-base font-bold"
+                autoFocus
+                disabled={isSaving}
+              />
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleEditSave}
+                disabled={isSaving}
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleEditCancel}
+                disabled={isSaving}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+          ) : (
+            <h2 className="text-foreground flex items-center gap-2 text-xl font-bold">
+              <Utensils className="h-5 w-5" />
+              {data.cafeteria_name}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7"
+                onClick={handleEditStart}
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            </h2>
+          )}
           <p className="text-muted-foreground mt-1 flex items-center gap-1 text-sm">
             <Calendar className="h-3.5 w-3.5" />
             {data.start_date} ~ {data.end_date}

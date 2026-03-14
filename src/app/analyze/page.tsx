@@ -93,7 +93,14 @@ export default function AnalyzePage() {
                   호출 없이 불러왔습니다.
                 </div>
               )}
-              <MenuResult data={result} />
+              <MenuResult
+                data={result}
+                onNameChange={(newName) =>
+                  setResult((prev) =>
+                    prev ? { ...prev, cafeteria_name: newName } : null
+                  )
+                }
+              />
             </div>
           )}
         </div>
