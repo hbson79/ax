@@ -313,13 +313,11 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (cachedByMenu) {
-      await supabase.from("menu_analyses").insert({
-        cafeteria_name: menuData.cafeteria_name,
-        start_date: menuData.start_date,
-        end_date: menuData.end_date,
-        weekly_menus: cachedByMenu.weekly_menus,
-        image_hash: imageHash,
-      })
+      await supabase
+        .from("menu_analyses")
+        .update({ image_hash: imageHash })
+        .eq("cafeteria_name", menuData.cafeteria_name)
+        .eq("start_date", menuData.start_date)
 
       return NextResponse.json({ result: cachedByMenu, cached: true })
     }
