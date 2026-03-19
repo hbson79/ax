@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
 
     // 💡 2. Gemini API 호출 시 JSON 모드 활성화
     const response = await ai.models.generateContent({
-      model: "gemini-3.1-flash-preview",
+      model: "gemini-3.1-flash-lite-preview",
       contents: [
         {
           role: "user",
