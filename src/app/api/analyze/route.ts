@@ -322,17 +322,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ result: cachedByMenu, cached: true })
     }
 
-    // 같은 식당의 이전 주차 레코드 삭제 (지나간 메뉴는 불필요)
-    const { error: deleteError } = await supabase
-      .from("menu_analyses")
-      .delete()
-      .eq("cafeteria_name", menuData.cafeteria_name)
-      .neq("start_date", menuData.start_date)
-
-    if (deleteError) {
-      console.error("Old menu delete error:", deleteError)
-    }
-
     const { error: dbError } = await supabase.from("menu_analyses").insert({
       cafeteria_name: menuData.cafeteria_name,
       start_date: menuData.start_date,
