@@ -2,8 +2,8 @@ import { GoogleGenAI } from "@google/genai"
 
 export const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! })
 
-export const GEMINI_MODEL = "gemini-3.1-flash-lite"
-export const EMBEDDING_MODEL = "gemini-embedding-001"
+export const GEMINI_MODEL = "gemini-3.5-flash"
+export const EMBEDDING_MODEL = "text-embedding-004"
 export const EMBEDDING_DIM = 768
 
 /**
