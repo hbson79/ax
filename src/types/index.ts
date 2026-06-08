@@ -43,6 +43,16 @@ export interface WikiDoc {
   similarity?: number // 검색 결과에만 포함
 }
 
+/** 즉시 조치 안내 생성 프롬프트 */
+export interface GuidancePrompt {
+  id: string
+  name: string
+  content: string
+  is_active: boolean
+  updated_at?: string
+  created_at?: string
+}
+
 /** 관제사 RAG 검색 응답 */
 export interface SearchResult {
   guidance: string // AI가 생성한 즉시 조치 안내

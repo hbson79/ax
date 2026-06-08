@@ -6,6 +6,8 @@ import type { WikiDoc } from "@/types"
 
 interface WikiCardProps {
   doc: WikiDoc
+  /** 검색어가 입력된 경우에만 본문(증상·원인·조치·예방)을 펼쳐서 표시 */
+  showBody?: boolean
 }
 
 function Field({ label, value }: { label: string; value?: string }) {
@@ -20,7 +22,7 @@ function Field({ label, value }: { label: string; value?: string }) {
   )
 }
 
-export function WikiCard({ doc }: WikiCardProps) {
+export function WikiCard({ doc, showBody = true }: WikiCardProps) {
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -34,12 +36,14 @@ export function WikiCard({ doc }: WikiCardProps) {
         </div>
         <CardTitle className="text-lg">{doc.title}</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Field label="증상" value={doc.symptom_summary} />
-        <Field label="추정 원인" value={doc.cause} />
-        <Field label="조치 절차" value={doc.procedure} />
-        <Field label="예방 · 주의" value={doc.prevention} />
-      </CardContent>
+      {showBody && (
+        <CardContent className="space-y-4">
+          <Field label="증상" value={doc.symptom_summary} />
+          <Field label="추정 원인" value={doc.cause} />
+          <Field label="조치 절차" value={doc.procedure} />
+          <Field label="예방 · 주의" value={doc.prevention} />
+        </CardContent>
+      )}
     </Card>
   )
 }

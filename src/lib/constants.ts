@@ -8,7 +8,9 @@ export const siteConfig = {
 
 export const navLinks = [
   { label: "고장 보고", href: "/report" },
+  { label: "보고 목록", href: "/report/list" },
   { label: "관제 검색", href: "/control" },
+  { label: "프롬프트", href: "/control/prompts" },
   { label: "학습 위키", href: "/wiki" },
 ] as const
 

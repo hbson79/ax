@@ -1,16 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
 import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
 import { getSupabase } from "@/lib/supabase"
+import { getActiveGuidancePrompt } from "@/lib/guidance"
 import type { WikiDoc } from "@/types"
-
-const GUIDANCE_PROMPT = `당신은 지하철 관제 센터의 고장처치 보조 AI입니다.
-관제사가 현장 승무원에게 무전으로 즉시 전달할 수 있도록, 아래 검색된 고장처치 위키 문서들을 근거로
-간결하고 정확한 '즉시 조치 안내'를 작성하세요.
-
-[작성 규칙]
-- 무전으로 읽어줄 수 있도록 핵심 조치 절차를 단계별로 명확하게 제시합니다.
-- 반드시 검색된 문서에 근거하여 작성하고, 근거가 부족하면 솔직하게 "관련 사례가 부족합니다"라고 안내하세요.
-- 마크다운으로 작성하되 과도하게 길지 않게 핵심만 담으세요.`
 
 export async function POST(request: NextRequest) {
   try {
@@ -57,6 +49,8 @@ export async function POST(request: NextRequest) {
       )
       .join("\n\n")
 
+    const guidancePrompt = await getActiveGuidancePrompt()
+
     const response = await ai.models.generateContent({
       model: GEMINI_MODEL,
       contents: [
@@ -70,7 +64,7 @@ export async function POST(request: NextRequest) {
         },
       ],
       config: {
-        systemInstruction: GUIDANCE_PROMPT,
+        systemInstruction: guidancePrompt,
         temperature: 0.3,
       },
     })

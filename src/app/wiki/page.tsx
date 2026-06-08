@@ -114,7 +114,11 @@ export default function WikiPage() {
           ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {filtered.map((doc) => (
-                <WikiCard key={doc.id} doc={doc} />
+                <WikiCard
+                  key={doc.id}
+                  doc={doc}
+                  showBody={keyword.trim().length > 0}
+                />
               ))}
             </div>
           )}

@@ -97,6 +97,16 @@ export function ReportForm({ onSaved }: ReportFormProps) {
 
       {/* 직접 입력 */}
       <TabsContent value="text" className="mt-6 space-y-4">
+        <div className="space-y-1.5">
+          <Label htmlFor="occurred_at">발생 시각</Label>
+          <Input
+            id="occurred_at"
+            type="datetime-local"
+            value={form.occurred_at}
+            onChange={(e) => update("occurred_at", e.target.value)}
+          />
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <Label htmlFor="line">호선</Label>
@@ -142,25 +152,14 @@ export function ReportForm({ onSaved }: ReportFormProps) {
           />
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
-          <div className="space-y-1.5">
-            <Label htmlFor="result">조치 결과</Label>
-            <Input
-              id="result"
-              placeholder="예: 정상 복귀 후 운행 재개"
-              value={form.result}
-              onChange={(e) => update("result", e.target.value)}
-            />
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="occurred_at">발생 시각</Label>
-            <Input
-              id="occurred_at"
-              type="datetime-local"
-              value={form.occurred_at}
-              onChange={(e) => update("occurred_at", e.target.value)}
-            />
-          </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="result">조치 결과</Label>
+          <Input
+            id="result"
+            placeholder="예: 정상 복귀 후 운행 재개"
+            value={form.result}
+            onChange={(e) => update("result", e.target.value)}
+          />
         </div>
 
         <Button
