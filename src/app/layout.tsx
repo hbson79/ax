@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "식당메뉴스캔 - AI 구내식당 메뉴 분석",
+  title: "고장처치 AX - AI 지하철 고장처치 지식 시스템",
   description:
-    "구내식당 메뉴 사진을 찍으면 AI가 자동으로 분석하여 주간 식단표를 데이터로 변환해드립니다.",
+    "지하철 차량 고장 데이터를 모아 AI가 고장처치 위키로 정제합니다. 관제사는 즉시 조치를 안내하고, 승무원은 평상시 학습으로 역량을 키웁니다.",
 }
 
 export default function RootLayout({

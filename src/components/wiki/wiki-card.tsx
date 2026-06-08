@@ -1,0 +1,45 @@
+"use client"
+
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import type { WikiDoc } from "@/types"
+
+interface WikiCardProps {
+  doc: WikiDoc
+}
+
+function Field({ label, value }: { label: string; value?: string }) {
+  if (!value) return null
+  return (
+    <div className="space-y-1">
+      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+        {label}
+      </p>
+      <p className="text-foreground text-sm whitespace-pre-wrap">{value}</p>
+    </div>
+  )
+}
+
+export function WikiCard({ doc }: WikiCardProps) {
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {doc.category && <Badge variant="secondary">{doc.category}</Badge>}
+          {typeof doc.similarity === "number" && (
+            <Badge variant="outline">
+              유사도 {Math.round(doc.similarity * 100)}%
+            </Badge>
+          )}
+        </div>
+        <CardTitle className="text-lg">{doc.title}</CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Field label="증상" value={doc.symptom_summary} />
+        <Field label="추정 원인" value={doc.cause} />
+        <Field label="조치 절차" value={doc.procedure} />
+        <Field label="예방 · 주의" value={doc.prevention} />
+      </CardContent>
+    </Card>
+  )
+}

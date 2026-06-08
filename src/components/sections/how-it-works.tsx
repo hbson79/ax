@@ -1,30 +1,30 @@
 "use client"
 
-import { Upload, Brain, Download } from "lucide-react"
+import { ClipboardList, Sparkles, Radio } from "lucide-react"
 import { SectionHeader } from "@/components/shared/section-header"
 import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
 const steps = [
   {
     step: "01",
-    title: "사진 업로드",
+    title: "고장 데이터 수집",
     description:
-      "구내식당 메뉴표 사진을 드래그앤드롭 또는 클릭으로 업로드합니다.",
-    icon: Upload,
+      "현장 고장과 조치 내용을 직접 입력하거나 기존 보고서를 업로드해 raw 데이터로 모읍니다.",
+    icon: ClipboardList,
   },
   {
     step: "02",
-    title: "AI 자동 분석",
+    title: "AI 위키 생성",
     description:
-      "AI가 사진 속 텍스트를 인식하고 날짜, 끼니, 메뉴를 자동으로 분류합니다.\n단,AI는 실수를 할 수 있으니 결과를 꼭 확인해주세요.",
-    icon: Brain,
+      "관제사가 유사 고장들을 선택해 생성을 누르면, AI가 증상·원인·조치 절차로 정제한 위키 문서를 만듭니다.",
+    icon: Sparkles,
   },
   {
     step: "03",
-    title: "결과 확인",
+    title: "검색 & 학습",
     description:
-      "깔끔한 사진파일로 다운로드 또는 교번달력앱 or 내근무앱에서 쉽게 확인할 수 있습니다.",
-    icon: Download,
+      "관제사는 증상을 검색해 즉시 조치를 안내하고, 승무원은 평상시 위키로 학습합니다.",
+    icon: Radio,
   },
 ]
 
@@ -35,7 +35,7 @@ export function HowItWorks() {
         <AnimatedWrapper>
           <SectionHeader
             title="사용 방법"
-            description="3단계로 간단하게 메뉴를 데이터로 변환하세요"
+            description="3단계로 고장 데이터를 실전 조치 지식으로 만드세요"
           />
         </AnimatedWrapper>
 

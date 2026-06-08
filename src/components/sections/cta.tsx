@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Camera } from "lucide-react"
+import { ArrowRight, Search } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
@@ -12,17 +12,17 @@ export function CTA() {
         <AnimatedWrapper>
           <div className="bg-primary text-primary-foreground rounded-3xl px-6 py-16 text-center md:px-16 md:py-24">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              지금 바로 메뉴를 분석해보세요
+              고장 발생 시, 머뭇거리지 마세요
             </h2>
             <p className="text-primary-foreground/80 mx-auto mt-4 max-w-xl text-lg">
-              사진 한 장이면 충분합니다. 구내식당 메뉴표를 스마트한 데이터로
-              변환해보세요.
+              증상만 입력하면 그동안 쌓인 데이터를 근거로 즉시 조치를
+              안내합니다.
             </p>
             <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Button size="lg" variant="secondary" asChild>
-                <Link href="/analyze">
-                  <Camera className="mr-2 h-4 w-4" />
-                  메뉴 분석하기
+                <Link href="/control">
+                  <Search className="mr-2 h-4 w-4" />
+                  고장 증상 검색하기
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

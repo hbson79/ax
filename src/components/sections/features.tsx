@@ -1,12 +1,12 @@
 "use client"
 
 import {
-  Camera,
-  Zap,
-  FileJson,
-  Calendar,
-  Shield,
-  Smartphone,
+  Database,
+  Sparkles,
+  Search,
+  GraduationCap,
+  Radio,
+  FileUp,
 } from "lucide-react"
 import {
   Card,
@@ -19,39 +19,40 @@ import { AnimatedWrapper } from "@/components/shared/animated-wrapper"
 
 const features = [
   {
-    title: "사진만 찍으면 끝",
+    title: "흩어진 데이터 통합",
     description:
-      "구내식당 메뉴판을 사진으로 찍기만 하면 AI가 알아서 텍스트를 인식하고 분류합니다.",
-    icon: Camera,
+      "개인 PC와 무전으로만 존재하던 고장·처치 내용을 한 곳에 모아 디지털 자산으로 축적합니다.",
+    icon: Database,
   },
   {
-    title: "빠른 분석",
-    description: "최신 AI 비전 기술로 몇 초 만에 전체 주간 식단을 분석합니다.",
-    icon: Zap,
+    title: "AI 위키 정제",
+    description:
+      "쌓인 raw 고장 보고를 AI가 증상·원인·조치 절차로 정제해 신뢰할 수 있는 표준 문서로 만듭니다.",
+    icon: Sparkles,
   },
   {
-    title: "구조화된 데이터",
+    title: "의미 기반 검색",
     description:
-      "분석 결과를 깔끔한 테이블형 사진으로 다운로드가능하며 교번달력앱 or 내근무앱에서 확인가능합니다.",
-    icon: FileJson,
+      "관제사가 증상을 자연어로 입력하면 임베딩 기반으로 가장 유사한 고장처치 문서를 즉시 찾아냅니다.",
+    icon: Search,
   },
   {
-    title: "주간 식단표 지원",
+    title: "즉시 조치 안내",
     description:
-      "주간 메뉴표를 날짜별, 끼니별(조식/중식/석식)로 자동 분류합니다.",
-    icon: Calendar,
+      "검색된 사례를 근거로 무전으로 바로 읽어줄 수 있는 단계별 조치 안내를 AI가 생성합니다.",
+    icon: Radio,
   },
   {
-    title: "정확한 인식",
+    title: "문서 업로드 파싱",
     description:
-      "손글씨, 인쇄물, 디지털 화면 등 다양한 형태의 메뉴판을 높은 정확도로 인식합니다.",
-    icon: Shield,
+      "기존 한글·PDF·이미지 고장 보고서를 업로드하면 AI가 구조화된 데이터로 추출해 적재합니다.",
+    icon: FileUp,
   },
   {
-    title: "어디서든 사용",
+    title: "평상시 학습",
     description:
-      "PC, 태블릿, 스마트폰 등 어떤 기기에서든 웹브라우저로 바로 사용할 수 있습니다.",
-    icon: Smartphone,
+      "승무원은 정제된 위키 문서로 평소 교육·학습을 진행해 현장 대응 역량을 키웁니다.",
+    icon: GraduationCap,
   },
 ]
 
@@ -62,7 +63,7 @@ export function Features() {
         <AnimatedWrapper>
           <SectionHeader
             title="주요 기능"
-            description="AI 기반 메뉴 분석으로 구내식당 식단 관리를 스마트하게"
+            description="흩어진 암묵지를 모아 AI가 실시간 조치 지식으로 바꿉니다"
           />
         </AnimatedWrapper>
 
