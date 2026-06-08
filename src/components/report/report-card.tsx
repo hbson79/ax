@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Loader2, Pencil, Trash2, X } from "lucide-react"
+import { Clock, Loader2, Pencil, Trash2, X } from "lucide-react"
 import { toast } from "sonner"
 import { Card } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { formatDateTime } from "@/lib/utils"
 import type { RawReport } from "@/types"
 
 interface ReportCardProps {
@@ -177,6 +178,12 @@ export function ReportCard({
           )}
           {report.source === "upload" && (
             <Badge variant="outline">업로드</Badge>
+          )}
+          {report.occurred_at && (
+            <span className="text-muted-foreground inline-flex items-center gap-1 text-xs">
+              <Clock className="h-3 w-3" />
+              {formatDateTime(report.occurred_at)}
+            </span>
           )}
         </div>
         <p className="text-foreground text-sm font-medium">{report.symptom}</p>

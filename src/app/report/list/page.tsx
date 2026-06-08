@@ -2,13 +2,58 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Link from "next/link"
-import { Loader2, Sparkles, RefreshCw, Plus, Search } from "lucide-react"
+import {
+  Loader2,
+  Sparkles,
+  RefreshCw,
+  Plus,
+  Search,
+  ArrowUp,
+  ArrowDown,
+} from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { PageHeader } from "@/components/layout/page-header"
 import { ReportCard } from "@/components/report/report-card"
 import type { RawReport } from "@/types"
+
+type SortField = "none" | "occurred_at" | "line"
+type SortDir = "asc" | "desc"
+
+interface SortRule {
+  field: SortField
+  dir: SortDir
+}
+
+const SORT_FIELD_LABEL: Record<SortField, string> = {
+  none: "없음",
+  occurred_at: "발생일시",
+  line: "호선",
+}
+
+// 한 기준으로 두 보고를 비교(값 없는 항목은 항상 뒤로). 정렬 방향 미적용 raw 결과.
+function compareByField(
+  a: RawReport,
+  b: RawReport,
+  field: Exclude<SortField, "none">
+): number {
+  const av = a[field]
+  const bv = b[field]
+  if (!av && !bv) return 0
+  if (!av) return 1
+  if (!bv) return -1
+  return field === "occurred_at"
+    ? av.localeCompare(bv)
+    : av.localeCompare(bv, "ko", { numeric: true })
+}
 
 export default function ReportListPage() {
   const [reports, setReports] = useState<RawReport[]>([])
@@ -16,6 +61,22 @@ export default function ReportListPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
   const [keyword, setKeyword] = useState("")
+  // [1차, 2차] 다단 정렬: 호선으로 묶고 그 안에서 발생일시순 등이 가능
+  const [sortRules, setSortRules] = useState<[SortRule, SortRule]>([
+    { field: "line", dir: "asc" },
+    { field: "occurred_at", dir: "desc" },
+  ])
+
+  const setRule = (idx: 0 | 1, patch: Partial<SortRule>) =>
+    setSortRules((prev) => {
+      const next: [SortRule, SortRule] = [{ ...prev[0] }, { ...prev[1] }]
+      next[idx] = { ...next[idx], ...patch }
+      // 1·2차가 같은 기준이면 중복이므로 2차를 비활성화
+      if (next[0].field !== "none" && next[0].field === next[1].field) {
+        next[idx === 0 ? 1 : 0].field = "none"
+      }
+      return next
+    })
 
   const loadReports = useCallback(async () => {
     setIsLoading(true)
@@ -47,13 +108,29 @@ export default function ReportListPage() {
 
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase()
-    if (!kw) return reports
-    return reports.filter((r) =>
-      [r.line, r.train_no, r.symptom, r.action, r.result]
-        .filter(Boolean)
-        .some((v) => v!.toLowerCase().includes(kw))
-    )
-  }, [reports, keyword])
+    const list = kw
+      ? reports.filter((r) =>
+          [r.line, r.train_no, r.symptom, r.action, r.result]
+            .filter(Boolean)
+            .some((v) => v!.toLowerCase().includes(kw))
+        )
+      : reports
+
+    const activeRules = sortRules.filter((r) => r.field !== "none")
+    if (activeRules.length === 0) return list
+
+    return [...list].sort((a, b) => {
+      for (const rule of activeRules) {
+        const cmp = compareByField(
+          a,
+          b,
+          rule.field as Exclude<SortField, "none">
+        )
+        if (cmp !== 0) return rule.dir === "asc" ? cmp : -cmp
+      }
+      return 0
+    })
+  }, [reports, keyword, sortRules])
 
   const handleGenerate = async () => {
     if (selected.size === 0) {
@@ -139,6 +216,66 @@ export default function ReportListPage() {
                 위키 생성 ({selected.size})
               </Button>
             </div>
+          </div>
+
+          {/* 정렬 (1차 → 2차 다단) */}
+          <div className="mb-4 space-y-2">
+            {([0, 1] as const).map((idx) => {
+              const rule = sortRules[idx]
+              const other = sortRules[idx === 0 ? 1 : 0]
+              return (
+                <div key={idx} className="flex items-center gap-2">
+                  <span className="text-muted-foreground w-10 text-sm">
+                    {idx === 0 ? "1차" : "2차"}
+                  </span>
+                  <Select
+                    value={rule.field}
+                    onValueChange={(v) =>
+                      setRule(idx, { field: v as SortField })
+                    }
+                  >
+                    <SelectTrigger size="sm" className="w-[120px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">없음</SelectItem>
+                      {(["occurred_at", "line"] as const).map((f) => (
+                        <SelectItem
+                          key={f}
+                          value={f}
+                          // 다른 행이 이미 쓰는 기준은 중복 선택 방지
+                          disabled={other.field === f}
+                        >
+                          {SORT_FIELD_LABEL[f]}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={rule.field === "none"}
+                    onClick={() =>
+                      setRule(idx, {
+                        dir: rule.dir === "asc" ? "desc" : "asc",
+                      })
+                    }
+                  >
+                    {rule.dir === "asc" ? (
+                      <>
+                        <ArrowUp className="mr-1 h-4 w-4" />
+                        오름차순
+                      </>
+                    ) : (
+                      <>
+                        <ArrowDown className="mr-1 h-4 w-4" />
+                        내림차순
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )
+            })}
           </div>
 
           {isLoading ? (
