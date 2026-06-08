@@ -29,8 +29,8 @@ export function Hero() {
 
           <AnimatedWrapper delay={0.2}>
             <p className="text-muted-foreground mt-6 max-w-xl text-lg md:text-xl">
-              개인 PC와 무전에 흩어진 암묵지를 한곳에 모으고, AI가 고장처치
-              위키로 정제합니다. 관제사는 즉시 조치를, 승무원은 평상시 학습을.
+              문서와 흩어진 암묵지를 한곳에 모으고, AI가 고장처치 위키로
+              정제합니다. 관제사는 즉시 조치를, 승무원은 평상시 학습을.
             </p>
           </AnimatedWrapper>
 

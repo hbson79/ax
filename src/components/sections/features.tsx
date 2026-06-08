@@ -21,7 +21,7 @@ const features = [
   {
     title: "흩어진 데이터 통합",
     description:
-      "개인 PC와 무전으로만 존재하던 고장·처치 내용을 한 곳에 모아 디지털 자산으로 축적합니다.",
+      "개인 PC와 문서로만 존재하던 고장·처치 내용을 한 곳에 모아 디지털 자산으로 축적합니다.",
     icon: Database,
   },
   {
@@ -63,7 +63,7 @@ export function Features() {
         <AnimatedWrapper>
           <SectionHeader
             title="주요 기능"
-            description="흩어진 암묵지를 모아 AI가 실시간 조치 지식으로 바꿉니다"
+            description="흩어진 문서와 암묵지를 모아 AI가 실시간 조치 지식으로 바꿉니다"
           />
         </AnimatedWrapper>
 
