@@ -43,10 +43,10 @@ export async function POST(request: NextRequest) {
 
     // 2) 검색 문서를 컨텍스트로 즉시 조치 안내 생성
     const context = wikiMatches
-      .map(
-        (w, i) =>
-          `[문서 ${i + 1}] ${w.title} (${w.category ?? "-"})\n증상:${w.symptom_summary ?? "-"}\n원인:${w.cause ?? "-"}\n조치절차:\n${w.procedure ?? "-"}`
-      )
+      .map((w, i) => {
+        const cases = w.source_report_ids?.length ?? 0
+        return `[문서 ${i + 1}] ${w.title} (${w.category ?? "-"}) · 근거 사례 ${cases}건\n증상:${w.symptom_summary ?? "-"}\n원인:${w.cause ?? "-"}\n조치절차:\n${w.procedure ?? "-"}`
+      })
       .join("\n\n")
 
     const guidancePrompt = await getActiveGuidancePrompt()

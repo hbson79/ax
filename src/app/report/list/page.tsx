@@ -69,7 +69,11 @@ export default function ReportListPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "위키 생성 실패")
-      toast.success(`위키 문서 "${data.wiki.title}"가 생성되었습니다.`)
+      toast.success(
+        data.merged
+          ? `기존 위키 "${data.wiki.title}"에 보강되었습니다.`
+          : `위키 문서 "${data.wiki.title}"가 생성되었습니다.`
+      )
       setSelected(new Set())
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "위키 생성 실패")

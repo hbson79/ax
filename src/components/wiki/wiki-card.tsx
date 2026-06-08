@@ -1,8 +1,19 @@
 "use client"
 
+import { ShieldCheck, ShieldAlert, Shield } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { getConfidence, type ConfidenceLevel } from "@/lib/confidence"
 import type { WikiDoc } from "@/types"
+
+const CONFIDENCE_STYLE: Record<
+  ConfidenceLevel,
+  { variant: "default" | "secondary" | "destructive"; Icon: typeof Shield }
+> = {
+  high: { variant: "default", Icon: ShieldCheck },
+  medium: { variant: "secondary", Icon: Shield },
+  low: { variant: "destructive", Icon: ShieldAlert },
+}
 
 interface WikiCardProps {
   doc: WikiDoc
@@ -23,6 +34,8 @@ function Field({ label, value }: { label: string; value?: string }) {
 }
 
 export function WikiCard({ doc, showBody = true }: WikiCardProps) {
+  const confidence = getConfidence(doc)
+  const { variant, Icon } = CONFIDENCE_STYLE[confidence.level]
   return (
     <Card>
       <CardHeader className="pb-3">
@@ -33,6 +46,10 @@ export function WikiCard({ doc, showBody = true }: WikiCardProps) {
               유사도 {Math.round(doc.similarity * 100)}%
             </Badge>
           )}
+          <Badge variant={variant} className="gap-1">
+            <Icon className="h-3 w-3" />
+            {confidence.label} · 근거 {confidence.cases}건
+          </Badge>
         </div>
         <CardTitle className="text-lg">{doc.title}</CardTitle>
       </CardHeader>
