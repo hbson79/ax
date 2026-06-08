@@ -51,5 +51,21 @@ create or replace function match_wiki(
 $$;
 
 -- 벡터 검색 인덱스
-create index if not exists wiki_embedding_idx
-  on wiki using ivfflat (embedding vector_cosine_ops) with (lists = 100);
+-- 주의: ivfflat은 데이터가 적으면(초기 단계) 빈 리스트를 골라 검색 결과가
+-- 0건이 되는 문제가 있습니다. 데이터가 충분히 쌓이기 전까지는 순차 스캔으로
+-- 충분히 빠르므로, 데이터가 많아지면(수천 건+) 아래 HNSW 인덱스를 활성화하세요.
+-- create index if not exists wiki_embedding_idx
+--   on wiki using hnsw (embedding vector_cosine_ops);
+
+-- 4) RLS 정책 (프로토타입: 인증 없이 anon 키로 직접 접근 허용)
+--    ⚠️ 운영 전에는 Supabase 인증 + 역할 기반 정책으로 교체해야 합니다.
+alter table raw_reports enable row level security;
+alter table wiki enable row level security;
+
+drop policy if exists "anon all on raw_reports" on raw_reports;
+create policy "anon all on raw_reports" on raw_reports
+  for all to anon using (true) with check (true);
+
+drop policy if exists "anon all on wiki" on wiki;
+create policy "anon all on wiki" on wiki
+  for all to anon using (true) with check (true);
