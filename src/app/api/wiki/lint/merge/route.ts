@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
+import { generate, embed } from "@/lib/gemini"
 import { getSupabase } from "@/lib/supabase"
 import { DEDUPE_PROMPT, embedTextOf, type WikiDocFields } from "@/lib/wiki"
 import type { WikiDoc } from "@/types"
@@ -41,8 +41,7 @@ export async function POST(request: NextRequest) {
     const docText = (d: WikiDoc, n: number) =>
       `[문서 ${n}] 제목:${d.title}\n분류:${d.category ?? "-"}\n증상:${d.symptom_summary ?? "-"}\n원인:${d.cause ?? "-"}\n조치절차:\n${d.procedure ?? "-"}\n예방:${d.prevention ?? "-"}`
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
+    const response = await generate({
       contents: [
         {
           role: "user",
@@ -53,11 +52,9 @@ export async function POST(request: NextRequest) {
           ],
         },
       ],
-      config: {
-        systemInstruction: DEDUPE_PROMPT,
-        responseMimeType: "application/json",
-        temperature: 0.2,
-      },
+      systemInstruction: DEDUPE_PROMPT,
+      json: true,
+      temperature: 0.2,
     })
 
     const text = response.text

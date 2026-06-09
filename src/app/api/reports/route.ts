@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ai, GEMINI_MODEL } from "@/lib/gemini"
+import { generate } from "@/lib/gemini"
+import { needsOcr, ocrToText } from "@/lib/ocr"
 import { getSupabase } from "@/lib/supabase"
 import type { RawReport } from "@/types"
 
@@ -75,7 +76,17 @@ export async function POST(request: NextRequest) {
         { inlineData: { mimeType: string; data: string } } | { text: string }
       > = []
 
-      if (isImage || isPdf) {
+      // 이미지/PDF에서 OCR로 추출한 텍스트(있으면). raw_reports 저장에 재사용.
+      let ocrText: string | null = null
+
+      if ((isImage || isPdf) && needsOcr()) {
+        // 로컬 LLM은 멀티모달 불가 → OCR로 먼저 텍스트화
+        ocrText = await ocrToText(bytes, file.type, file.name)
+        parts.push({
+          text: `다음 문서에서 고장 보고를 추출해주세요.\n\n---\n${ocrText}\n---`,
+        })
+      } else if (isImage || isPdf) {
+        // gemini: 멀티모달로 파일 직접 전달
         parts.push({
           inlineData: {
             mimeType: file.type,
@@ -91,14 +102,11 @@ export async function POST(request: NextRequest) {
         })
       }
 
-      const response = await ai.models.generateContent({
-        model: GEMINI_MODEL,
+      const response = await generate({
         contents: [{ role: "user", parts }],
-        config: {
-          systemInstruction: EXTRACT_PROMPT,
-          responseMimeType: "application/json",
-          temperature: 0,
-        },
+        systemInstruction: EXTRACT_PROMPT,
+        json: true,
+        temperature: 0,
       })
 
       const text = response.text
@@ -110,8 +118,9 @@ export async function POST(request: NextRequest) {
       }
 
       const parsed = JSON.parse(text) as { reports: Partial<RawReport>[] }
-      const rawText =
-        isImage || isPdf
+      const rawText = ocrText
+        ? ocrText.slice(0, 10000)
+        : isImage || isPdf
           ? null
           : Buffer.from(bytes).toString("utf-8").slice(0, 10000)
 

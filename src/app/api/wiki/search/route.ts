@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
+import { generate, embed } from "@/lib/gemini"
 import { getSupabase } from "@/lib/supabase"
 import { getActiveGuidancePrompt } from "@/lib/guidance"
 import type { WikiDoc } from "@/types"
@@ -51,8 +51,7 @@ export async function POST(request: NextRequest) {
 
     const guidancePrompt = await getActiveGuidancePrompt()
 
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
+    const response = await generate({
       contents: [
         {
           role: "user",
@@ -63,10 +62,8 @@ export async function POST(request: NextRequest) {
           ],
         },
       ],
-      config: {
-        systemInstruction: guidancePrompt,
-        temperature: 0.3,
-      },
+      systemInstruction: guidancePrompt,
+      temperature: 0.3,
     })
 
     return NextResponse.json({

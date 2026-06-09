@@ -1,7 +1,7 @@
 // wiki 정제·병합 공통 로직 (generate / ingest / lint-merge에서 공유)
 
 import type { SupabaseClient } from "@supabase/supabase-js"
-import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
+import { generate, embed } from "@/lib/gemini"
 import type { RawReport } from "@/types"
 
 // 유사도가 이 값 이상인 기존 wiki가 있으면 신규 생성 대신 병합·보강한다.
@@ -134,18 +134,14 @@ export async function upsertWikiFromReports(
     ? `[기존 위키 문서]\n제목:${existing.title}\n분류:${existing.category}\n증상:${existing.symptom_summary}\n원인:${existing.cause}\n조치절차:\n${existing.procedure}\n예방:${existing.prevention}\n\n[새 고장 보고]\n${reportsText}\n\n위 기존 문서를 새 보고로 보강·갱신해주세요.`
     : `다음 고장 보고들을 하나의 고장처치 위키 문서로 정제해주세요.\n\n${reportsText}`
 
-  const response = await ai.models.generateContent({
-    model: GEMINI_MODEL,
+  const response = await generate({
     contents: [{ role: "user", parts: [{ text: userText }] }],
-    config: {
-      systemInstruction: existing ? MERGE_PROMPT : GENERATE_PROMPT,
-      responseMimeType: "application/json",
-      temperature: 0.2,
-    },
+    systemInstruction: existing ? MERGE_PROMPT : GENERATE_PROMPT,
+    json: true,
+    temperature: 0.2,
   })
 
   const text = response.text
-  if (!text) throw new Error("AI 응답에서 텍스트를 찾을 수 없습니다.")
 
   const doc = JSON.parse(text) as WikiDocFields
   const embedding = await embed(embedTextOf(doc), "RETRIEVAL_DOCUMENT")
