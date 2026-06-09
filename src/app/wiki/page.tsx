@@ -1,6 +1,8 @@
 "use client"
 
 import { useEffect, useMemo, useState } from "react"
+import Link from "next/link"
+import { Stethoscope } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -66,11 +68,19 @@ export default function WikiPage() {
           </div>
 
           <div className="mb-6 space-y-3">
-            <Input
-              placeholder="제목·증상·원인으로 검색"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
+            <div className="flex gap-2">
+              <Input
+                placeholder="제목·증상·원인으로 검색"
+                value={keyword}
+                onChange={(e) => setKeyword(e.target.value)}
+              />
+              <Button variant="outline" asChild className="shrink-0">
+                <Link href="/wiki/lint">
+                  <Stethoscope className="mr-1 h-4 w-4" />
+                  건강 점검
+                </Link>
+              </Button>
+            </div>
             {categories.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 <Badge
