@@ -39,6 +39,12 @@ export default function WikiPage() {
     [docs]
   )
 
+  // 관련 문서(cross-link) 표시용 id → {id, title} 맵
+  const docById = useMemo(
+    () => new Map(docs.map((d) => [d.id, { id: d.id, title: d.title }])),
+    [docs]
+  )
+
   const filtered = useMemo(() => {
     const kw = keyword.trim().toLowerCase()
     return docs.filter((d) => {
@@ -128,6 +134,16 @@ export default function WikiPage() {
                   key={doc.id}
                   doc={doc}
                   showBody={keyword.trim().length > 0}
+                  relatedDocs={(doc.related_ids ?? [])
+                    .map((id) => docById.get(id))
+                    .filter((d): d is { id: string; title: string } => !!d)}
+                  onSelectRelated={(id) => {
+                    const t = docById.get(id)?.title
+                    if (t) {
+                      setKeyword(t)
+                      setCategory(null)
+                    }
+                  }}
                 />
               ))}
             </div>

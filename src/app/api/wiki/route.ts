@@ -8,7 +8,7 @@ export async function GET() {
     const { data, error } = await supabase
       .from("wiki")
       .select(
-        "id, title, category, symptom_summary, cause, procedure, prevention, source_report_ids, updated_at, created_at"
+        "id, title, category, symptom_summary, cause, procedure, prevention, source_report_ids, related_ids, updated_at, created_at"
       )
       .order("updated_at", { ascending: false })
 

@@ -38,6 +38,7 @@ export interface WikiDoc {
   procedure?: string
   prevention?: string
   source_report_ids?: string[]
+  related_ids?: string[] // 의미적으로 가까운 관련 wiki id (cross-link)
   updated_at?: string
   created_at?: string
   similarity?: number // 검색 결과에만 포함

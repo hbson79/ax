@@ -10,6 +10,7 @@ import {
   Search,
   ArrowUp,
   ArrowDown,
+  Wand2,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -60,6 +61,8 @@ export default function ReportListPage() {
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [isLoading, setIsLoading] = useState(true)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [isIngesting, setIsIngesting] = useState(false)
+  const [pending, setPending] = useState(0)
   const [keyword, setKeyword] = useState("")
   // [1차, 2차] 다단 정렬: 호선으로 묶고 그 안에서 발생일시순 등이 가능
   const [sortRules, setSortRules] = useState<[SortRule, SortRule]>([
@@ -81,10 +84,15 @@ export default function ReportListPage() {
   const loadReports = useCallback(async () => {
     setIsLoading(true)
     try {
-      const res = await fetch("/api/reports")
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error)
+      const [reportsRes, pendingRes] = await Promise.all([
+        fetch("/api/reports"),
+        fetch("/api/wiki/ingest"),
+      ])
+      const data = await reportsRes.json()
+      if (!reportsRes.ok) throw new Error(data.error)
       setReports(data.reports ?? [])
+      const p = await pendingRes.json()
+      setPending(p.pending ?? 0)
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "목록을 불러오지 못했습니다."
@@ -93,6 +101,27 @@ export default function ReportListPage() {
       setIsLoading(false)
     }
   }, [])
+
+  const handleIngest = async () => {
+    setIsIngesting(true)
+    try {
+      const res = await fetch("/api/wiki/ingest", { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      if (data.processed === 0) {
+        toast.info("자동 정리할 미처리 보고가 없습니다.")
+      } else {
+        toast.success(
+          `${data.processed}건 정리 완료 (신규 ${data.created} · 보강 ${data.merged}, 남음 ${data.remaining})`
+        )
+      }
+      await loadReports()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "자동 정리 실패")
+    } finally {
+      setIsIngesting(false)
+    }
+  }
 
   useEffect(() => {
     loadReports()
@@ -202,6 +231,20 @@ export default function ReportListPage() {
                   className={`mr-1 h-4 w-4 ${isLoading ? "animate-spin" : ""}`}
                 />
                 새로고침
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleIngest}
+                disabled={isIngesting || pending === 0}
+                title="미처리 보고를 AI가 자동으로 분류·병합합니다"
+              >
+                {isIngesting ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <Wand2 className="mr-1 h-4 w-4" />
+                )}
+                자동 정리 ({pending})
               </Button>
               <Button
                 size="sm"

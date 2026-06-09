@@ -1,17 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
-import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
 import { getSupabase } from "@/lib/supabase"
-import {
-  GENERATE_PROMPT,
-  MERGE_PROMPT,
-  embedTextOf,
-  type WikiDocFields,
-} from "@/lib/wiki"
+import { upsertWikiFromReports } from "@/lib/wiki"
 import type { RawReport } from "@/types"
-
-// 유사도가 이 값 이상인 기존 wiki가 있으면 신규 생성 대신 병합·보강한다.
-// 너무 낮으면 다른 고장유형을 잘못 합칠 수 있으므로 보수적으로 설정.
-const MERGE_THRESHOLD = 0.82
 
 export async function POST(request: NextRequest) {
   try {
@@ -37,128 +27,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 보고들을 텍스트로 직렬화
-    const reportsText = (reports as RawReport[])
-      .map(
-        (r, i) =>
-          `[보고 ${i + 1}] 호선:${r.line ?? "-"} 차량:${r.train_no ?? "-"}\n증상:${r.symptom}\n조치:${r.action ?? "-"}\n결과:${r.result ?? "-"}`
-      )
-      .join("\n\n")
-
-    // 1) 새 보고 임베딩으로 가장 유사한 기존 wiki를 먼저 탐색
-    const reportEmbedding = await embed(reportsText, "RETRIEVAL_QUERY")
-    const { data: similar, error: matchError } = await supabase.rpc(
-      "match_wiki",
-      { query_embedding: reportEmbedding, match_count: 1 }
+    const result = await upsertWikiFromReports(
+      supabase,
+      reports as RawReport[],
+      report_ids
     )
-    if (matchError) {
-      console.error("match_wiki rpc error:", matchError)
-    }
 
-    const top = (similar as { id: string; similarity: number }[] | null)?.[0]
-    const mergeTarget = top && top.similarity >= MERGE_THRESHOLD ? top.id : null
+    // 수동 생성한 보고도 ingest 완료로 표시(자동 ingest 대상에서 제외)
+    await supabase
+      .from("raw_reports")
+      .update({ ingested: true })
+      .in("id", report_ids)
 
-    // 2) 병합 대상이 있으면 기존 wiki 전체를 불러와 LLM에 함께 전달
-    let existing: WikiDocFields | null = null
-    let existingSourceIds: string[] = []
-    if (mergeTarget) {
-      const { data: cur } = await supabase
-        .from("wiki")
-        .select(
-          "title, category, symptom_summary, cause, procedure, prevention, source_report_ids"
-        )
-        .eq("id", mergeTarget)
-        .single()
-      if (cur) {
-        existing = cur as WikiDocFields
-        existingSourceIds = (cur.source_report_ids as string[] | null) ?? []
-      }
-    }
-
-    const userText = existing
-      ? `[기존 위키 문서]\n제목:${existing.title}\n분류:${existing.category}\n증상:${existing.symptom_summary}\n원인:${existing.cause}\n조치절차:\n${existing.procedure}\n예방:${existing.prevention}\n\n[새 고장 보고]\n${reportsText}\n\n위 기존 문서를 새 보고로 보강·갱신해주세요.`
-      : `다음 고장 보고들을 하나의 고장처치 위키 문서로 정제해주세요.\n\n${reportsText}`
-
-    const response = await ai.models.generateContent({
-      model: GEMINI_MODEL,
-      contents: [{ role: "user", parts: [{ text: userText }] }],
-      config: {
-        systemInstruction: existing ? MERGE_PROMPT : GENERATE_PROMPT,
-        responseMimeType: "application/json",
-        temperature: 0.2,
-      },
-    })
-
-    const text = response.text
-    if (!text) {
-      return NextResponse.json(
-        { error: "AI 응답에서 텍스트를 찾을 수 없습니다." },
-        { status: 500 }
-      )
-    }
-
-    const doc = JSON.parse(text) as WikiDocFields
-
-    // 정제 문서 전체를 임베딩 (검색 정확도를 위해 핵심 필드를 합침)
-    const embedding = await embed(embedTextOf(doc), "RETRIEVAL_DOCUMENT")
-
-    // 3) 병합이면 UPDATE(출처 합집합), 아니면 INSERT
-    if (mergeTarget && existing) {
-      const mergedSourceIds = Array.from(
-        new Set([...existingSourceIds, ...report_ids])
-      )
-      const { data, error } = await supabase
-        .from("wiki")
-        .update({
-          title: doc.title,
-          category: doc.category,
-          symptom_summary: doc.symptom_summary,
-          cause: doc.cause,
-          procedure: doc.procedure,
-          prevention: doc.prevention,
-          source_report_ids: mergedSourceIds,
-          embedding,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", mergeTarget)
-        .select()
-        .single()
-
-      if (error) {
-        console.error("wiki update error:", error)
-        return NextResponse.json(
-          { error: "wiki 문서 갱신에 실패했습니다." },
-          { status: 500 }
-        )
-      }
-      return NextResponse.json({ wiki: data, merged: true })
-    }
-
-    const { data, error } = await supabase
-      .from("wiki")
-      .insert({
-        title: doc.title,
-        category: doc.category,
-        symptom_summary: doc.symptom_summary,
-        cause: doc.cause,
-        procedure: doc.procedure,
-        prevention: doc.prevention,
-        source_report_ids: report_ids,
-        embedding,
-        updated_at: new Date().toISOString(),
-      })
-      .select()
-      .single()
-
-    if (error) {
-      console.error("wiki insert error:", error)
-      return NextResponse.json(
-        { error: "wiki 문서 저장에 실패했습니다." },
-        { status: 500 }
-      )
-    }
-
-    return NextResponse.json({ wiki: data, merged: false })
+    return NextResponse.json({ wiki: result.wiki, merged: result.merged })
   } catch (error) {
     console.error("wiki generate error:", error)
     if (error instanceof SyntaxError) {
@@ -168,7 +49,12 @@ export async function POST(request: NextRequest) {
       )
     }
     return NextResponse.json(
-      { error: "wiki 생성 중 오류가 발생했습니다." },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "wiki 생성 중 오류가 발생했습니다.",
+      },
       { status: 500 }
     )
   }

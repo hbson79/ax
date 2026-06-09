@@ -1,6 +1,6 @@
 "use client"
 
-import { ShieldCheck, ShieldAlert, Shield } from "lucide-react"
+import { ShieldCheck, ShieldAlert, Shield, Link2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getConfidence, type ConfidenceLevel } from "@/lib/confidence"
@@ -19,6 +19,10 @@ interface WikiCardProps {
   doc: WikiDoc
   /** 검색어가 입력된 경우에만 본문(증상·원인·조치·예방)을 펼쳐서 표시 */
   showBody?: boolean
+  /** cross-link로 연결된 관련 문서 (제목 표시용) */
+  relatedDocs?: Pick<WikiDoc, "id" | "title">[]
+  /** 관련 문서 배지 클릭 시 호출 */
+  onSelectRelated?: (id: string) => void
 }
 
 function Field({ label, value }: { label: string; value?: string }) {
@@ -33,7 +37,12 @@ function Field({ label, value }: { label: string; value?: string }) {
   )
 }
 
-export function WikiCard({ doc, showBody = true }: WikiCardProps) {
+export function WikiCard({
+  doc,
+  showBody = true,
+  relatedDocs,
+  onSelectRelated,
+}: WikiCardProps) {
   const confidence = getConfidence(doc)
   const { variant, Icon } = CONFIDENCE_STYLE[confidence.level]
   return (
@@ -59,6 +68,26 @@ export function WikiCard({ doc, showBody = true }: WikiCardProps) {
           <Field label="추정 원인" value={doc.cause} />
           <Field label="조치 절차" value={doc.procedure} />
           <Field label="예방 · 주의" value={doc.prevention} />
+        </CardContent>
+      )}
+      {relatedDocs && relatedDocs.length > 0 && (
+        <CardContent className={showBody ? "pt-0" : undefined}>
+          <p className="text-muted-foreground mb-1.5 flex items-center gap-1 text-xs font-semibold tracking-wide uppercase">
+            <Link2 className="h-3 w-3" />
+            관련 문서
+          </p>
+          <div className="flex flex-wrap gap-1.5">
+            {relatedDocs.map((r) => (
+              <Badge
+                key={r.id}
+                variant="outline"
+                className={onSelectRelated ? "cursor-pointer" : undefined}
+                onClick={() => onSelectRelated?.(r.id)}
+              >
+                {r.title}
+              </Badge>
+            ))}
+          </div>
         </CardContent>
       )}
     </Card>

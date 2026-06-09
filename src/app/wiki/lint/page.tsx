@@ -11,6 +11,7 @@ import {
   Clock,
   ShieldAlert,
   CheckCircle2,
+  Link2,
 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
@@ -24,6 +25,7 @@ export default function WikiLintPage() {
   const [result, setResult] = useState<WikiLintResult | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [mergingKey, setMergingKey] = useState<string | null>(null)
+  const [isLinking, setIsLinking] = useState(false)
 
   const runLint = useCallback(async () => {
     setIsLoading(true)
@@ -44,6 +46,22 @@ export default function WikiLintPage() {
   useEffect(() => {
     runLint()
   }, [runLint])
+
+  const handleCrosslink = async () => {
+    setIsLinking(true)
+    try {
+      const res = await fetch("/api/wiki/crosslink", { method: "POST" })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      toast.success(
+        `관련 문서 연결 완료 (${data.linked}/${data.total}건 연결됨)`
+      )
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "연결 실패")
+    } finally {
+      setIsLinking(false)
+    }
+  }
 
   const handleMerge = async (pair: DuplicatePair) => {
     // 근거 사례가 더 많은 쪽을 남기고, 적은 쪽을 통합·삭제
@@ -95,6 +113,20 @@ export default function WikiLintPage() {
                   <ArrowLeft className="mr-1 h-4 w-4" />
                   위키로
                 </Link>
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCrosslink}
+                disabled={isLinking}
+                title="모든 위키에 의미적으로 가까운 관련 문서를 연결합니다"
+              >
+                {isLinking ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <Link2 className="mr-1 h-4 w-4" />
+                )}
+                관련 문서 연결
               </Button>
               <Button
                 variant="outline"

@@ -1,4 +1,12 @@
-// wiki 정제·병합 공통 로직 (generate / lint-merge에서 공유)
+// wiki 정제·병합 공통 로직 (generate / ingest / lint-merge에서 공유)
+
+import type { SupabaseClient } from "@supabase/supabase-js"
+import { ai, embed, GEMINI_MODEL } from "@/lib/gemini"
+import type { RawReport } from "@/types"
+
+// 유사도가 이 값 이상인 기존 wiki가 있으면 신규 생성 대신 병합·보강한다.
+// 너무 낮으면 다른 고장유형을 잘못 합칠 수 있으므로 보수적으로 설정.
+export const MERGE_THRESHOLD = 0.82
 
 export interface WikiDocFields {
   title: string
@@ -65,4 +73,113 @@ export function embedTextOf(doc: WikiDocFields): string {
   ]
     .filter(Boolean)
     .join("\n")
+}
+
+/** 고장 보고들을 직렬화 텍스트로 변환한다. */
+export function reportsToText(reports: RawReport[]): string {
+  return reports
+    .map(
+      (r, i) =>
+        `[보고 ${i + 1}] 호선:${r.line ?? "-"} 차량:${r.train_no ?? "-"}\n증상:${r.symptom}\n조치:${r.action ?? "-"}\n결과:${r.result ?? "-"}`
+    )
+    .join("\n\n")
+}
+
+export interface UpsertResult {
+  wiki: Record<string, unknown>
+  merged: boolean
+}
+
+/**
+ * 고장 보고 묶음을 wiki로 정제해 저장한다.
+ * 가장 유사한 기존 wiki(>= MERGE_THRESHOLD)가 있으면 병합·갱신하고,
+ * 없으면 신규 생성한다. generate/ingest가 공유.
+ */
+export async function upsertWikiFromReports(
+  supabase: SupabaseClient,
+  reports: RawReport[],
+  reportIds: string[]
+): Promise<UpsertResult> {
+  const reportsText = reportsToText(reports)
+
+  // 1) 새 보고 임베딩으로 가장 유사한 기존 wiki 탐색
+  const reportEmbedding = await embed(reportsText, "RETRIEVAL_QUERY")
+  const { data: similar, error: matchError } = await supabase.rpc(
+    "match_wiki",
+    { query_embedding: reportEmbedding, match_count: 1 }
+  )
+  if (matchError) console.error("match_wiki rpc error:", matchError)
+
+  const top = (similar as { id: string; similarity: number }[] | null)?.[0]
+  const mergeTarget = top && top.similarity >= MERGE_THRESHOLD ? top.id : null
+
+  // 2) 병합 대상이 있으면 기존 wiki 전체를 불러옴
+  let existing: WikiDocFields | null = null
+  let existingSourceIds: string[] = []
+  if (mergeTarget) {
+    const { data: cur } = await supabase
+      .from("wiki")
+      .select(
+        "title, category, symptom_summary, cause, procedure, prevention, source_report_ids"
+      )
+      .eq("id", mergeTarget)
+      .single()
+    if (cur) {
+      existing = cur as WikiDocFields
+      existingSourceIds = (cur.source_report_ids as string[] | null) ?? []
+    }
+  }
+
+  const userText = existing
+    ? `[기존 위키 문서]\n제목:${existing.title}\n분류:${existing.category}\n증상:${existing.symptom_summary}\n원인:${existing.cause}\n조치절차:\n${existing.procedure}\n예방:${existing.prevention}\n\n[새 고장 보고]\n${reportsText}\n\n위 기존 문서를 새 보고로 보강·갱신해주세요.`
+    : `다음 고장 보고들을 하나의 고장처치 위키 문서로 정제해주세요.\n\n${reportsText}`
+
+  const response = await ai.models.generateContent({
+    model: GEMINI_MODEL,
+    contents: [{ role: "user", parts: [{ text: userText }] }],
+    config: {
+      systemInstruction: existing ? MERGE_PROMPT : GENERATE_PROMPT,
+      responseMimeType: "application/json",
+      temperature: 0.2,
+    },
+  })
+
+  const text = response.text
+  if (!text) throw new Error("AI 응답에서 텍스트를 찾을 수 없습니다.")
+
+  const doc = JSON.parse(text) as WikiDocFields
+  const embedding = await embed(embedTextOf(doc), "RETRIEVAL_DOCUMENT")
+
+  // 3) 병합이면 UPDATE(출처 합집합), 아니면 INSERT
+  if (mergeTarget && existing) {
+    const mergedSourceIds = Array.from(
+      new Set([...existingSourceIds, ...reportIds])
+    )
+    const { data, error } = await supabase
+      .from("wiki")
+      .update({
+        ...doc,
+        source_report_ids: mergedSourceIds,
+        embedding,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", mergeTarget)
+      .select()
+      .single()
+    if (error) throw new Error("wiki 문서 갱신에 실패했습니다.")
+    return { wiki: data, merged: true }
+  }
+
+  const { data, error } = await supabase
+    .from("wiki")
+    .insert({
+      ...doc,
+      source_report_ids: reportIds,
+      embedding,
+      updated_at: new Date().toISOString(),
+    })
+    .select()
+    .single()
+  if (error) throw new Error("wiki 문서 저장에 실패했습니다.")
+  return { wiki: data, merged: false }
 }
